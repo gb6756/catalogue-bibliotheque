@@ -136,71 +136,53 @@ function closeModal() {
     if (modal) modal.classList.remove('active');
 }
 
-// --- INITIALISATION AU CHARGEMENT DE LA PAGE ---
+// --- INITIALISATION AUTOMATIQUE SUR GITHUB PAGES ---
 window.addEventListener('DOMContentLoaded', function() {
-    
-    // 1. Restaurer la mémoire si elle existe
-    try {
-        const savedData = localStorage.getItem('biblio_csv_data');
-        if (savedData) {
-            allBooks = JSON.parse(savedData);
-            const statusEl = document.getElementById('status');
-            if (statusEl) {
-                statusEl.style.color = '#16a34a';
-                statusEl.textContent = `✅ ${allBooks.length} livres chargés automatiquement !`;
-            }
-            applyFilters();
-        }
-    } catch (e) {
-        console.warn("Erreur de lecture mémoire :", e);
+    const statusEl = document.getElementById('status');
+
+    if (statusEl) {
+        statusEl.style.color = 'black';
+        statusEl.textContent = "Chargement du catalogue en cours...";
     }
 
-    // 2. Écouteur sur le bouton de fichier CSV
-    const fileInput = document.getElementById('csvFileInput');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const statusEl = document.getElementById('status');
-            if (statusEl) {
-                statusEl.style.color = 'black';
-                statusEl.textContent = "Analyse du fichier...";
+    // On va chercher le fichier 'livres.csv' directement sur le serveur GitHub
+    fetch('livres.csv')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Impossible de trouver le fichier livres.csv sur le serveur.");
             }
-
-            Papa.parse(file, {
+            return response.text();
+        })
+        .then(csvText => {
+            // Analyse du contenu CSV récupéré avec PapaParse
+            Papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true,
                 complete: function(res) {
                     if (res.data && res.data.length > 0) {
                         allBooks = res.data;
-                        try {
-                            localStorage.setItem('biblio_csv_data', JSON.stringify(allBooks));
-                            if (statusEl) {
-                                statusEl.style.color = '#16a34a';
-                                statusEl.textContent = `✅ ${allBooks.length} livres chargés et enregistrés !`;
-                            }
-                        } catch (err) {
-                            if (statusEl) {
-                                statusEl.style.color = '#16a34a';
-                                statusEl.textContent = `✅ ${allBooks.length} livres chargés !`;
-                            }
+                        
+                        if (statusEl) {
+                            statusEl.style.color = '#16a34a'; // Vert
+                            statusEl.textContent = `✅ ${allBooks.length} livres chargés depuis le serveur !`;
                         }
+                        
+                        // Affichage initial des livres
                         applyFilters();
                     } else {
                         if (statusEl) {
-                            statusEl.style.color = '#dc2626';
-                            statusEl.textContent = "❌ Fichier vide ou illisible.";
+                            statusEl.style.color = '#dc2626'; // Rouge
+                            statusEl.textContent = "❌ Le fichier catalogue est vide.";
                         }
-                    }
-                },
-                error: function() {
-                    if (statusEl) {
-                        statusEl.style.color = '#dc2626';
-                        statusEl.textContent = "❌ Erreur de lecture.";
                     }
                 }
             });
+        })
+        .catch(error => {
+            console.error("Erreur de chargement :", error);
+            if (statusEl) {
+                statusEl.style.color = '#dc2626';
+                statusEl.textContent = "❌ Erreur de chargement du catalogue en ligne.";
+            }
         });
-    }
 });
