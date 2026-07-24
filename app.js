@@ -58,23 +58,34 @@ function render() {
     `).join('');
 }
 
-// Application des filtres de recherche
+// Fonction utilitaire pour retirer tous les accents et mettre en minuscules
+function cleanString(str) {
+    if (!str) return '';
+    return str
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // Supprime tous les diacritiques (accents)
+}
+
+// Application des filtres de recherche (insensible aux accents et majuscules)
 function applyFilters() {
     const elCote = document.getElementById('fCote');
     const elTitre = document.getElementById('fTitre');
     const elAuteur = document.getElementById('fAuteur');
     const elResume = document.getElementById('fResume');
 
-    const c = elCote ? elCote.value.toLowerCase() : '';
-    const t = elTitre ? elTitre.value.toLowerCase() : '';
-    const a = elAuteur ? elAuteur.value.toLowerCase() : '';
-    const r = elResume ? elResume.value.toLowerCase() : '';
+    // On nettoie la saisie de l'utilisateur (minuscules + sans accents)
+    const c = cleanString(elCote ? elCote.value : '');
+    const t = cleanString(elTitre ? elTitre.value : '');
+    const a = cleanString(elAuteur ? elAuteur.value : '');
+    const r = cleanString(elResume ? elResume.value : '');
 
     filteredBooks = allBooks.filter(b => {
-        const cote = getVal(b, ['Cote']).toLowerCase();
-        const titre = getVal(b, ['Titre']).toLowerCase();
-        const auteur = getVal(b, ['Auteur']).toLowerCase();
-        const resume = getVal(b, ['Résumé', 'Resume']).toLowerCase();
+        // On nettoie les données du catalogue (minuscules + sans accents)
+        const cote = cleanString(getVal(b, ['Cote']));
+        const titre = cleanString(getVal(b, ['Titre']));
+        const auteur = cleanString(getVal(b, ['Auteur']));
+        const resume = cleanString(getVal(b, ['Résumé', 'Resume']));
 
         return (!c || cote.includes(c)) &&
                (!t || titre.includes(t)) &&
@@ -84,7 +95,6 @@ function applyFilters() {
 
     render();
 }
-
 // Remise à zéro des filtres
 function resetFilters() {
     if (document.getElementById('fCote')) document.getElementById('fCote').value = '';
