@@ -59,12 +59,13 @@ function render() {
 }
 
 // Fonction utilitaire pour retirer tous les accents et mettre en minuscules
+// Fonction utilitaire robuste pour retirer TOUS les accents / diacritiques
 function cleanString(str) {
     if (!str) return '';
     return str
         .toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, ""); // Supprime tous les diacritiques (accents)
+        .replace(/\p{Diacritic}/gu, ""); // Supprime tous les accents (méthode Unicode universelle)
 }
 
 // Application des filtres de recherche (insensible aux accents et majuscules)
@@ -74,14 +75,14 @@ function applyFilters() {
     const elAuteur = document.getElementById('fAuteur');
     const elResume = document.getElementById('fResume');
 
-    // On nettoie la saisie de l'utilisateur (minuscules + sans accents)
+    // Nettoyage de ce que saisit l'utilisateur (sans accents, sans majuscules)
     const c = cleanString(elCote ? elCote.value : '');
     const t = cleanString(elTitre ? elTitre.value : '');
     const a = cleanString(elAuteur ? elAuteur.value : '');
     const r = cleanString(elResume ? elResume.value : '');
 
     filteredBooks = allBooks.filter(b => {
-        // On nettoie les données du catalogue (minuscules + sans accents)
+        // Nettoyage des données des livres pour la comparaison
         const cote = cleanString(getVal(b, ['Cote']));
         const titre = cleanString(getVal(b, ['Titre']));
         const auteur = cleanString(getVal(b, ['Auteur']));
