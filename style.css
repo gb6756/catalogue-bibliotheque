@@ -33,7 +33,8 @@
         th { background: #f1f5f9; color: var(--primary); font-size: 0.85rem; text-transform: uppercase; }
         tbody tr { cursor: pointer; }
         tbody tr:hover { background-color: #f8fafc; }
-        
+        tbody tr:nth-child(even) { background-color: #feffeb; }
+
         /* Personnalisation de la Cote */
         .cote-badge { 
             background: #e2e8f0; 
