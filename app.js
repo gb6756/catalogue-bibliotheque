@@ -29,11 +29,12 @@ function highlightText(text, search) {
 
 // Affichage du tableau et du compteur
 function render() {
-    const tbody = document.getElementById('tableBody');
+    const grid = document.getElementById('booksGrid');
     const countElement = document.getElementById('bookCount');
 
-    if (!tbody) return;
+    if (!grid) return;
 
+    // Mise à jour du compteur
     if (countElement) {
         if (allBooks.length === 0) {
             countElement.textContent = "Aucun livre dans le catalogue.";
@@ -44,18 +45,35 @@ function render() {
         }
     }
 
+    // Si aucun livre trouvé
     if (filteredBooks.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">Aucun livre ne correspond à votre recherche.</td></tr>';
+        grid.innerHTML = '<div class="no-results">Aucun livre ne correspond à votre recherche.</div>';
         return;
     }
 
-    tbody.innerHTML = filteredBooks.map((b, i) => `
-        <tr onclick="openModal(${i})">
-            <td><span class="cote-badge">${escapeHtml(getVal(b, ['Cote']) || '-')}</span></td>
-            <td><b>${escapeHtml(getVal(b, ['Titre']) || 'Sans titre')}</b></td>
-            <td>${escapeHtml(getVal(b, ['Auteur']) || '-')}</td>
-        </tr>
-    `).join('');
+    // Génération des cartes
+    grid.innerHTML = filteredBooks.map((b, i) => {
+        const cote = escapeHtml(getVal(b, ['Cote']) || '-');
+        const titre = escapeHtml(getVal(b, ['Titre']) || 'Sans titre');
+        const auteur = escapeHtml(getVal(b, ['Auteur']) || 'Auteur inconnu');
+        const type = escapeHtml(getVal(b, ['Type']) || '');
+        const theme = escapeHtml(getVal(b, ['Thème général', 'Theme general']) || '');
+
+        return `
+            <div class="book-card" onclick="openModal(${i})">
+                <div class="card-header">
+                    <span class="cote-badge">${cote}</span>
+                    ${type ? `<span class="type-badge">${type}</span>` : ''}
+                </div>
+                <h3 class="card-title">${titre}</h3>
+                <p class="card-author">✍️ ${auteur}</p>
+                ${theme ? `<p class="card-theme">📁 ${theme}</p>` : ''}
+                <div class="card-footer">
+                    <span>Cliquer pour voir le résumé & detail →</span>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 // Fonction utilitaire pour retirer tous les accents et mettre en minuscules

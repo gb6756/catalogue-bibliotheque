@@ -33,8 +33,8 @@
         th { background: #f1f5f9; color: var(--primary); font-size: 0.85rem; text-transform: uppercase; }
         tbody tr { cursor: pointer; }
         tbody tr:hover { background-color: #f8fafc; }
-        tbody tr:nth-child(even) { background-color: #fffff0; }
-
+		tbody tr:nth-child(even) { background-color: #feffeb; }
+        
         /* Personnalisation de la Cote */
         .cote-badge { 
             background: #e2e8f0; 
@@ -76,4 +76,115 @@
     border-radius: 12px;
     margin: 0 4px;
     font-size: 0.85rem;
+}
+/* --- GRILLE DES LIVRES (4 par ligne sur grand écran) --- */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colonnes de taille égale */
+    gap: 20px; /* Espace entre les cartes */
+    margin-top: 20px;
+}
+
+/* --- DESIGN DE LA CARTE / PAVÉ --- */
+.book-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+/* Effet au survol du curseur */
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    border-color: #cbd5e1;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.cote-badge {
+    background-color: #2563eb;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.type-badge {
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    border: 1px solid #e2e8f0;
+}
+
+.card-title {
+    font-size: 1.05rem;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.card-author {
+    font-size: 0.9rem;
+    color: #475569;
+    margin: 0 0 6px 0;
+    font-weight: 500;
+}
+
+.card-theme {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0 0 12px 0;
+}
+
+.card-footer {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
+    margin-top: auto;
+    font-size: 0.75rem;
+    color: #2563eb;
+    text-align: right;
+    font-weight: 500;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 8px;
+    color: #64748b;
+}
+
+/* --- RESPONSIVE (Tablettes & Smartphones) --- */
+@media (max-width: 1024px) {
+    .books-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 par ligne sur petits PC / tablettes paysage */
+    }
+}
+
+@media (max-width: 768px) {
+    .books-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 par ligne sur tablette portrait */
+    }
+}
+
+@media (max-width: 480px) {
+    .books-grid {
+        grid-template-columns: 1fr; /* 1 seule carte par ligne sur smartphone */
+    }
 }
