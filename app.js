@@ -206,15 +206,19 @@ function render() {
 }
 
 // Génération des boutons de navigation (1, 2, 3...)
+// Génération des boutons de navigation (1, 2, 3...) en HAUT et en BAS
 function renderPagination(totalPages) {
-    const paginationElement = document.getElementById('pagination');
-    if (!paginationElement) return;
+    const pageTop = document.getElementById('paginationTop');
+    const pageBottom = document.getElementById('paginationBottom');
 
+    // Si une seule page ou aucun résultat, on vide les deux paginations
     if (totalPages <= 1) {
-        paginationElement.innerHTML = '';
+        if (pageTop) pageTop.innerHTML = '';
+        if (pageBottom) pageBottom.innerHTML = '';
         return;
     }
 
+    // Construction des boutons HTML
     let html = `
         <button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">❮ Précédent</button>
     `;
@@ -231,16 +235,20 @@ function renderPagination(totalPages) {
         <button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Suivant ❯</button>
     `;
 
-    paginationElement.innerHTML = html;
+    // On injecte le même HTML dans les deux conteneurs
+    if (pageTop) pageTop.innerHTML = html;
+    if (pageBottom) pageBottom.innerHTML = html;
 }
 
 // Changement de page au clic
 function changePage(newPage) {
     currentPage = newPage;
     render();
-    const grid = document.getElementById('booksGrid');
-    if (grid) {
-        grid.scrollIntoView({ behavior: 'smooth' });
+
+    // On remonte l'écran vers la pagination du haut pour qu'elle reste bien visible
+    const topEl = document.getElementById('paginationTop');
+    if (topEl) {
+        topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
