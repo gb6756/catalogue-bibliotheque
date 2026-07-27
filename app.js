@@ -1,7 +1,9 @@
 // Variables globales
 let allBooks = [];
 let filteredBooks = [];
-
+// --- VARIABLES POUR LA PAGINATION ---
+let currentPage = 1;
+const itemsPerPage = 24; // Ex: 24 livres par page (divisible par 4 colonnes = 6 lignes)
 // Utilitaire pour récupérer une valeur CSV sans se soucier des majuscules/accents
 function getVal(row, possibleKeys) {
     if (!row) return '';
@@ -31,10 +33,11 @@ function highlightText(text, search) {
 function render() {
     const grid = document.getElementById('booksGrid');
     const countElement = document.getElementById('bookCount');
+    const paginationElement = document.getElementById('pagination');
 
     if (!grid) return;
 
-    // Mise à jour du compteur
+    // 1. Mise à jour du compteur global
     if (countElement) {
         if (allBooks.length === 0) {
             countElement.textContent = "Aucun livre dans le catalogue.";
@@ -45,14 +48,28 @@ function render() {
         }
     }
 
-    // Si aucun livre trouvé
+    // 2. Si aucun résultat
     if (filteredBooks.length === 0) {
         grid.innerHTML = '<div class="no-results">Aucun livre ne correspond à votre recherche.</div>';
+        if (paginationElement) paginationElement.innerHTML = '';
         return;
     }
 
-    // Génération des cartes
-    grid.innerHTML = filteredBooks.map((b, i) => {
+    // 3. Découpage des résultats pour la page actuelle
+    const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
+    
+    // Si la page actuelle dépasse le total suite à un filtrage, on revient à la page 1
+    if (currentPage > totalPages) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const booksToDisplay = filteredBooks.slice(startIndex, endIndex);
+
+    // 4. Génération des cartes HTML (uniquement pour la page courante)
+    grid.innerHTML = booksToDisplay.map((b, i) => {
+        // Indice réel du livre dans le tableau filteredBooks
+        const realIndex = startIndex + i; 
+
         const cote = escapeHtml(getVal(b, ['Cote']) || '-');
         const titre = escapeHtml(getVal(b, ['Titre']) || 'Sans titre');
         const auteur = escapeHtml(getVal(b, ['Auteur']) || 'Auteur inconnu');
@@ -60,7 +77,7 @@ function render() {
         const theme = escapeHtml(getVal(b, ['Thème général', 'Theme general']) || '');
 
         return `
-            <div class="book-card" onclick="openModal(${i})">
+            <div class="book-card" onclick="openModal(${realIndex})">
                 <div class="card-header">
                     <span class="cote-badge">${cote}</span>
                     ${type ? `<span class="type-badge">${type}</span>` : ''}
@@ -69,13 +86,52 @@ function render() {
                 <p class="card-author">✍️ ${auteur}</p>
                 ${theme ? `<p class="card-theme">📁 ${theme}</p>` : ''}
                 <div class="card-footer">
-                    <span>Cliquer pour voir le résumé & detail →</span>
+                    <span>Voir la fiche →</span>
                 </div>
             </div>
         `;
     }).join('');
+
+    // 5. Génération des boutons de pagination
+    renderPagination(totalPages);
+}
+// Fonction qui génère les boutons 1, 2, 3...
+function renderPagination(totalPages) {
+    const paginationElement = document.getElementById('pagination');
+    if (!paginationElement || totalPages <= 1) {
+        if (paginationElement) paginationElement.innerHTML = '';
+        return;
+    }
+
+    let buttonsHtml = `
+        <button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">❮ Précédent</button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+        // Affiche la page si elle est proche de la page courante
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+            buttonsHtml += `
+                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>
+            `;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+            buttonsHtml += `<span class="page-dots">...</span>`;
+        }
+    }
+
+    buttonsHtml += `
+        <button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Suivant ❯</button>
+    `;
+
+    paginationElement.innerHTML = buttonsHtml;
 }
 
+// Changement de page
+function changePage(newPage) {
+    currentPage = newPage;
+    render();
+    // Remonte doucement en haut de la grille pour le confort
+    document.getElementById('booksGrid').scrollIntoView({ behavior: 'smooth' });
+}
 // Fonction utilitaire pour retirer tous les accents et mettre en minuscules
 // Fonction utilitaire robuste pour retirer TOUS les accents / diacritiques
 function cleanString(str) {
