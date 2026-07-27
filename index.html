@@ -3,61 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catalogue Bibliothèque BRHAM</title>
-    <!-- Parseur CSV spécialisé -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-	<link rel="stylesheet" media="screen" href="style.css">
-    <style>
-    </style>
+    <title>Catalogue de la Bibliothèque</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- PapaParse pour lire le CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1 style="margin:0;">📚 Catalogue de la Bibliothèque du BRHAM</h1>
-    </header>
-    <!-- Filtres -->
-    <div class="card">
-        <div class="filter-header">
-            <h3>🔍 Filtres de recherche</h3>
-            <!-- NOUVEAU BOUTON RÉINITIALISER -->
-            <button class="btn-reset" onclick="resetFilters()">🔄 Effacer les filtres</button>
+    <div class="container">
+        <h1>📚 Catalogue de la Bibliothèque</h1>
+        <div id="status"></div>
+        <div id="bookCount"></div>
+
+        <!-- Formulaire / Champs de recherche -->
+        <div class="filters-grid">
+            <input type="text" id="fCote" placeholder="Rechercher par Cote...">
+            <input type="text" id="fTitre" placeholder="Rechercher par Titre...">
+            <input type="text" id="fAuteur" placeholder="Rechercher par Auteur...">
+            <input type="text" id="fResume" placeholder="Rechercher dans le Résumé...">
         </div>
-        <div class="filter-grid">
-            <div class="filter-item"><label>Cote</label><input type="text" id="fCote" oninput="applyFilters()"></div>
-            <div class="filter-item"><label>Titre</label><input type="text" id="fTitre" oninput="applyFilters()"></div>
-            <div class="filter-item"><label>Auteur</label><input type="text" id="fAuteur" oninput="applyFilters()"></div>
-            <div class="filter-item"><label>Mot / Expression dans le résumé</label><input type="text" id="fResume" placeholder="Ex: cathédrale, 1835..." oninput="applyFilters()"></div>
+
+        <!-- Grille des livres (Cartes / Pavés) -->
+        <div id="booksGrid" class="books-grid"></div>
+
+        <!-- Pagination du bas -->
+        <div id="pagination" class="pagination-container"></div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- FENÊTRE MODALE (POP-UP FICHE DU LIVRE) - INDISPENSABLE ! -->
+    <!-- ======================================================= -->
+    <div id="bookModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
         </div>
     </div>
-	<!-- BANDEAU COMPTEUR DE RÉSULTATS -->
-	<div class="results-info">
-		<span id="bookCount">Chargement du catalogue...</span>
-	</div>
-	<!-- Grille des livres -->
-	<div id="booksGrid" class="books-grid"></div>
 
-	<!-- Pagination du bas -->
-	<div id="pagination" class="pagination-container"></div>
-	</div>
-
-<!-- Modal / Pop-up -->
-<div class="modal-overlay" id="modal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="closeModal()">&times;</button>
-        <h2 id="mTitre" style="color:var(--primary); margin-top:0;"></h2>
-        <p id="mAuteur" style="color:var(--accent); font-weight:bold;"></p>
-        <hr>
-        <p><b>Cote :</b> <span id="mCote" class="cote-badge"></span> | <b>Type :</b> <span id="mType"></span></p>
-        <p><b>Disponibilité :</b> <span id="mDispo"></span> | <b>Fonds :</b> <span id="mFond"></span></p>
-        <p><b>Date / Édition :</b> <span id="mDateEdit"></span> | <b>Tome :</b> <span id="mTome"></span></p>
-        <p><b>Thèmes :</b> <span id="mTheme"></span></p>
-        <div style="background:#f8fafc; padding:12px; border-radius:6px; margin-top:15px; border:1px solid #e2e8f0;">
-            <b>Résumé :</b>
-            <p id="mResume" style="margin-top:5px; white-space:pre-wrap; line-height: 1.5;"></p>
-        </div>
-    </div>
-</div>
-<script type="text/javascript" src="app.js"></script>
+    <!-- Script JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>
