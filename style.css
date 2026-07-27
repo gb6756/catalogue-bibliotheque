@@ -188,3 +188,47 @@
         grid-template-columns: 1fr; /* 1 seule carte par ligne sur smartphone */
     }
 }
+/* --- PAGINATION --- */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.page-btn {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.page-btn.active {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+    font-weight: bold;
+}
+
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-dots {
+    color: #64748b;
+    padding: 0 4px;
+}
