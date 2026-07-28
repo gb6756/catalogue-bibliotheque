@@ -212,12 +212,18 @@ function openModal(i) {
     
     document.getElementById('modal').classList.add('active');
 }
-
+//Fermeture pop-up modal par la croix X
 function closeModal() {
     const modal = document.getElementById('modal');
     if (modal) modal.classList.remove('active');
 }
-
+//Fermeture pop-up modal par clic extérieur
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('modal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});
 // --- CHARGEMENT AUTOMATIQUE DEPUIS GITHUB ---
 window.addEventListener('DOMContentLoaded', function() {
     const statusEl = document.getElementById('status');
